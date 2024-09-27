@@ -19,7 +19,7 @@ void mem_init(size_t size)
     if(!memory_address)
     {
         printf("Memory initializing failed!\n");
-        exit;
+        exit(EXIT_FAILURE);
     }
     memoryPool = (memoryBlock*)memory_address;
     memoryPool->size = size - sizeof(memoryBlock);
@@ -61,10 +61,15 @@ void* mem_alloc(size_t size)
 
 void mem_free(void* block)
 {
-    memoryBlock *thisblock = block;
-    thisblock->is_free = true;
-    free(thisblock);
+    if (!block)
+    {
+        printf("Cannot free null block\n");
+        return;
+    }
     
+    memoryBlock *thisblock = (memoryBlock*)((char*)block - sizeof(memoryBlock));
+    thisblock->is_free = true;
+    printf("Memory block freed\n");    
 }
 
 void* mem_resize(void* block, size_t size)
@@ -81,7 +86,8 @@ void* mem_resize(void* block, size_t size)
     memoryBlock* newBlock = mem_alloc(size);
     if(newBlock)
     {
-        memcpy(newBlock,block,walker->size);
+        size_t copy_size = (walker->size < size) ? walker->size : size;
+        memcpy(newBlock,block,copy_size);
         mem_free(block);
     }
     return newBlock;
@@ -103,7 +109,7 @@ int main()
     mem_alloc(300);
     mem_alloc(200);
 
-    printf("Memory pool size: %d\n", memoryPool->size);
+    printf("Memory pool size: %zu\n", memoryPool->size);
     printf("Memory pool size: %d\n", poolSize);
     printf("Alloxated size: %d\n", allocatedSize);
 

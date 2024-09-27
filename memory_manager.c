@@ -17,9 +17,10 @@ size_t poolSize = 0;
 size_t allocatedSize = 0;
 void* memory_address;
 
+
 void mem_init(size_t size)
 {
-    memory_address = malloc(size);
+    memory_address = malloc(size*sizeof(int));
     if(!memory_address)
     {
         printf("Memory initializing failed!\n");
@@ -65,7 +66,10 @@ void* mem_alloc(size_t size)
 
 void mem_free(void* block)
 {
-    free(block);
+    memoryBlock *thisblock = block;
+    thisblock->is_free = true;
+    free(thisblock);
+    
 }
 
 void* mem_resize(void* block, size_t size)

@@ -15,7 +15,7 @@ void* memory_address;
 
 void mem_init(size_t size)
 {
-    memory_address = malloc(size*sizeof(int));
+    memory_address = malloc(size*sizeof(memoryBlock));
     if(!memory_address)
     {
         printf("Memory initializing failed!\n");
@@ -34,7 +34,6 @@ void* mem_alloc(size_t size)
     if (poolSize < allocatedSize + size)
     {
         printf("Not enought space! Allocation failed!\n");
-        exit(EXIT_FAILURE);
     }
     
     memoryBlock* current = memoryPool;
@@ -56,7 +55,7 @@ void* mem_alloc(size_t size)
             }
             current->is_free = false;
             printf("Memory allocated!\n");
-            allocatedSize += size;
+            allocatedSize += size + sizeof(memoryBlock);
             return (void*)((char*)current + sizeof(memoryBlock));
         }
         current = current->nextBlock;
@@ -110,14 +109,14 @@ void mem_deinit()
 
 int main()
 {
-    // mem_init(1024);
-    // mem_alloc(500);
-    // mem_alloc(300);
-    // mem_alloc(200);
+    mem_init(1024);
+    mem_alloc(500);
+    mem_alloc(300);
+    mem_alloc(200);
 
-    // printf("Memory pool size: %zu\n", memoryPool->size);
-    // printf("Memory pool size: %d\n", poolSize);
-    // printf("Alloxated size: %d\n", allocatedSize);
+    printf("Memory pool size: %zu\n", memoryPool->size);
+    printf("Memory pool size: %d\n", poolSize);
+    printf("Alloxated size: %d\n", allocatedSize);
 
     return 0;
 }

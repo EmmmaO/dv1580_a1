@@ -34,10 +34,9 @@ void* mem_alloc(size_t size)
     if (poolSize < allocatedSize + size)
     {
         printf("Not enought space! Allocation failed!\n");
+        exit;
     }
-    else
-    {
-            memoryBlock* current = memoryPool;
+    memoryBlock* current = memoryPool;
     while(current)
     {
         if (current->is_free && size <= current->size)
@@ -64,8 +63,6 @@ void* mem_alloc(size_t size)
     printf("Failed to allocate memory!\n");
     return NULL;
 }
-    }
-
 
 void mem_free(void* block)
 {
@@ -104,10 +101,13 @@ void* mem_resize(void* block, size_t size)
 
 void mem_deinit()
 {
-    free(memory_address);
-    memoryPool = NULL;
-    memory_address = NULL;   
-    poolSize = 0;
+    if(memory_address)
+    {
+        free(memory_address);
+        memoryPool = NULL;
+        memory_address = NULL;   
+        poolSize = 0;
+    }
 }
 
 int main()

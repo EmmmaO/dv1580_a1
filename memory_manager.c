@@ -34,7 +34,7 @@ void* mem_alloc(size_t size)
     if (poolSize < allocatedSize + size)
     {
         printf("Not enought space! Allocation failed!\n");
-        return NULL;
+        exit(EXIT_FAILURE);
     }
     
     memoryBlock* current = memoryPool;

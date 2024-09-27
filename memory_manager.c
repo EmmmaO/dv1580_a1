@@ -104,14 +104,14 @@ void mem_deinit()
 
 int main()
 {
-    mem_init(1024);
-    mem_alloc(500);
-    mem_alloc(300);
-    mem_alloc(200);
+    // mem_init(1024);
+    // mem_alloc(500);
+    // mem_alloc(300);
+    // mem_alloc(200);
 
-    printf("Memory pool size: %zu\n", memoryPool->size);
-    printf("Memory pool size: %d\n", poolSize);
-    printf("Alloxated size: %d\n", allocatedSize);
+    // printf("Memory pool size: %zu\n", memoryPool->size);
+    // printf("Memory pool size: %d\n", poolSize);
+    // printf("Alloxated size: %d\n", allocatedSize);
 
     return 0;
 }

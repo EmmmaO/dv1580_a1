@@ -100,10 +100,10 @@ void mem_free(void* block)
             if(current->is_free && current->nextBlock->is_free)
             {
                 current->size += current->nextBlock->size;
+                current->nextBlock = current->nextBlock->nextBlock;
             }
-        current = current->nextBlock;
         }
-        current = NULL;
+        current = current->nextBlock;
     }
 
 }

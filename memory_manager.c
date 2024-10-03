@@ -91,16 +91,21 @@ void mem_free(void* block)
     allocatedSize -= thisblock->size/sizeof(memoryBlock);
 
     memoryBlock *current = memoryPool;
-    while(current && current->nextBlock)
+    printf("Memory block freed (freed: %ld)  have: %ld left\n\n", thisblock->size/sizeof(memoryBlock), poolSize/sizeof(memoryBlock) - allocatedSize);    
+
+    while(current)
     {
-        if(current->is_free && current->nextBlock->is_free)
+        if(current->nextBlock)
         {
-            current->size += current->nextBlock->size;
-        }
+            if(current->is_free && current->nextBlock->is_free)
+            {
+                current->size += current->nextBlock->size;
+            }
         current = current->nextBlock;
+        }
+        current = NULL;
     }
 
-    printf("Memory block freed (freed: %ld)  have: %ld left\n\n", thisblock->size/sizeof(memoryBlock), poolSize/sizeof(memoryBlock) - allocatedSize);    
 }
 
 void* mem_resize(void* block, size_t size)

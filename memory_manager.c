@@ -16,6 +16,7 @@ void* memory_address;
 void mem_init(size_t size)
 {
     memory_address = malloc(size*sizeof(memoryBlock));
+    printf("Initialized: %ld\n", size*sizeof(memoryBlock));
     if(!memory_address)
     {
         printf("Memory initializing failed!\n");
@@ -23,6 +24,7 @@ void mem_init(size_t size)
     }
     memoryPool = (memoryBlock*)memory_address;
     memoryPool->size = size - sizeof(memoryBlock);
+    printf("memoryPool->size: %ld, size: %ld, sizeof(memoryBlock): %ld\n", memoryPool->size, size, sizeof(memoryBlock));
     memoryPool->is_free = true;
     memoryPool->nextBlock = NULL;
     poolSize = size;
@@ -31,14 +33,12 @@ void mem_init(size_t size)
 
 void* mem_alloc(size_t size)
 {
-    if (poolSize < allocatedSize + size)
+    if (poolSize >= allocatedSize + size)
     {
-        printf("Not enought space! Allocation failed!\n");
-        exit;
-    }
-    memoryBlock* current = memoryPool;
+        memoryBlock* current = memoryPool;
     while(current)
     {
+        printf("current block size: %ld\n", current->size);
         if (current->is_free && size <= current->size)
         {
             //Splites the block if there is memory left
@@ -60,6 +60,10 @@ void* mem_alloc(size_t size)
         }
         current = current->nextBlock;
     }
+       
+    }
+     printf("Trying to initialize %ld (total %ld), but only have %ld left.\n", size, allocatedSize+size, poolSize - allocatedSize);
+    printf("Not enought space! Allocation failed!\n");
     printf("Failed to allocate memory!\n");
     return NULL;
 }
@@ -112,14 +116,14 @@ void mem_deinit()
 
 int main()
 {
-    // mem_init(1024);
-    // mem_alloc(500);
-    // mem_alloc(300);
-    // mem_alloc(200);
+    mem_init(1024);
+    mem_alloc(500);
+    mem_alloc(300);
+    mem_alloc(200);
 
-    // printf("Memory pool size: %zu\n", memoryPool->size);
-    // printf("Memory pool size: %d\n", poolSize);
-    // printf("Alloxated size: %d\n", allocatedSize);
+    printf("Memory pool size: %zu\n", memoryPool->size);
+    printf("Memory pool size: %ld\n", poolSize);
+    printf("Alloxated size: %ld\n", allocatedSize);
 
     return 0;
 }

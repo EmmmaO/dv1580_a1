@@ -10,7 +10,6 @@ typedef struct Node{
     struct Node* next; // A pointer to the next node in the List
 }Node;
 
-
 void list_init(Node** head, size_t size);
 void list_insert(Node** head, uint16_t data);
 void list_insert_after(Node* prev_node, uint16_t data);

@@ -64,6 +64,7 @@ void test_list_insert()
     list_init(&head, sizeof(Node) * 2);
     list_insert(&head, 10);
     list_insert(&head, 20);
+    printf("%d\n", head->data);
     my_assert(head->data == 10);
     my_assert(head->next->data == 20);
     list_cleanup(&head);
@@ -181,6 +182,7 @@ void test_list_display()
     {
         values[k] = 10 + rand() % 90;
         list_insert(&head, values[k]);
+        printf("inserted: %d", values[k]);
         if (k == randomLow && !Low)
         {
             Low = list_search(&head, values[k]);
@@ -201,7 +203,6 @@ void test_list_display()
             sprintf(stringFull + strlen(stringFull), "]");
         }
     }
-
 #ifdef DEBUG
     printf("LowValue=%s, HighValue=%s\n", LowValue, HighValue);
     printf("RefFull:'%s'\n", stringFull);

@@ -15,109 +15,66 @@ void* memory_address;
 
 void mem_init(size_t size)
 {
-    memory_address = malloc(size+sizeof(memoryBlock));
-    if(memory_address)
+    memory_address = malloc(size*sizeof(memoryBlock));
+    printf("\nInitialized: %ld\n", size*sizeof(memoryBlock));
+    if(!memory_address)
     {
-        memoryPool = (memoryBlock*)(memory_address);
-        memoryPool->size = size - sizeof(memoryBlock);
-        memoryPool->is_free = true;
-        memoryPool->nextBlock = NULL;
-        poolSize = size;
+        printf("Memory initializing failed!\n");
+        exit(EXIT_FAILURE);
     }
-    else
-        printf("Memory init failed!\n");
-
-    // memory_address = malloc(size*sizeof(memoryBlock));
-    // printf("\nInitialized: %ld\n", size*sizeof(memoryBlock));
-    // if(!memory_address)
-    // {
-    //     printf("Memory initializing failed!\n");
-    //     exit(EXIT_FAILURE);
-    // }
-    // memoryPool = (memoryBlock*)((char*)memory_address);
-    // memoryPool->size = size*sizeof(memoryBlock);
-    // printf("memoryPool->size: %ld, size: %ld, sizeof(memoryBlock): %ld\n", memoryPool->size, size, sizeof(memoryBlock));
-    // memoryPool->is_free = true;
-    // memoryPool->nextBlock = NULL;
-    // poolSize = size*sizeof(memoryBlock);
-    // printf("Memory initialized!\n\n");
+    memoryPool = (memoryBlock*)((char*)memory_address);
+    memoryPool->size = size*sizeof(memoryBlock);
+    printf("memoryPool->size: %ld, size: %ld, sizeof(memoryBlock): %ld\n", memoryPool->size, size, sizeof(memoryBlock));
+    memoryPool->is_free = true;
+    memoryPool->nextBlock = NULL;
+    poolSize = size*sizeof(memoryBlock);
+    printf("Memory initialized!\n\n");
 }
 
 void* mem_alloc(size_t size)
 {
-    printf("Trying to allocate: %ld (total: %ld) has: %ld left\n", size, allocatedSize+size, poolSize-allocatedSize);///sizeof(memoryBlock)-allocatedSize);
+    printf("Trying to allocate: %ld (total: %ld) has: %ld left\n", size, allocatedSize+size, poolSize/sizeof(memoryBlock)-allocatedSize);
     
-    if(poolSize >= allocatedSize + size + sizeof(memoryBlock))
+    if (poolSize >= sizeof(memoryBlock)*(allocatedSize + size))
     {
         memoryBlock* current = memoryPool;
         while(current)
         {
-            printf("current: %ld\n", current->size);
-            if(current->is_free && size <= current->size || current->size == 0)
+            printf("current block size: %ld\n", current->size/sizeof(memoryBlock));
+            if (current->is_free && size*sizeof(memoryBlock) <= current->size || current->size == 0)
             {
-                //sprits the block if possible
-                if(current->size > size + sizeof(memoryBlock))
+                //Splites the block if there is memory left
+                if (current->size > size + sizeof(memoryBlock))
                 {
                     memoryBlock* newMemBlock = (memoryBlock*)((char*)current+sizeof(memoryBlock)+size);
+                    newMemBlock->size = current->size - size*sizeof(memoryBlock);            
+                    //newMemBlock->size = poolSize - sizeof(memoryBlock)*(allocatedSize - size);
                     newMemBlock->is_free = true;
-                    newMemBlock->size = current->size - size - sizeof(memoryBlock);
-                    newMemBlock->nextBlock = NULL;
+                    newMemBlock->nextBlock = current->nextBlock;
+                    //newMemBlock->prevBlock = current;
 
-                    current->size = size;
+                  //  printf("nmb.s: %ld\n", (newMemBlock->size)/sizeof(memoryBlock));
+
+                    current->size = size*sizeof(memoryBlock);
                     current->nextBlock = newMemBlock;
-
-                    printf("newmemblock: %ld\n",newMemBlock->size);
+                    printf("Memory block split!\n");
+                    printf("Current: %ld  nextBlock: %ld\n", current->size/sizeof(memoryBlock), newMemBlock->size/sizeof(memoryBlock));
                 }
                 current->is_free = false;
-                allocatedSize += size;
-                return (void*)(char*)current + sizeof(memoryBlock);
+                printf("Memory allocated!\n\n");
+                allocatedSize += size;// + sizeof(memoryBlock);
+              //  printf("Allocated size: %ld\n", allocatedSize);
+                return (void*)((char*)current + sizeof(memoryBlock));
             }
             current = current->nextBlock;
         }
     }
     else
-        printf("Failed to allocate memory!");
-
-    // if (poolSize >= sizeof(memoryBlock)*(allocatedSize + size))
-    // {
-    //     memoryBlock* current = memoryPool;
-    //     while(current)
-    //     {
-    //         printf("current block size: %ld\n", current->size/sizeof(memoryBlock));
-    //         if (current->is_free && size*sizeof(memoryBlock) <= current->size || current->size == 0)
-    //         {
-    //             //Splites the block if there is memory left
-    //             if (current->size > size + sizeof(memoryBlock))
-    //             {
-    //                 memoryBlock* newMemBlock = (memoryBlock*)((char*)current+sizeof(memoryBlock)+size);
-    //                 newMemBlock->size = current->size - size*sizeof(memoryBlock);            
-    //                 //newMemBlock->size = poolSize - sizeof(memoryBlock)*(allocatedSize - size);
-    //                 newMemBlock->is_free = true;
-    //                 newMemBlock->nextBlock = current->nextBlock;
-    //                 //newMemBlock->prevBlock = current;
-
-    //               //  printf("nmb.s: %ld\n", (newMemBlock->size)/sizeof(memoryBlock));
-
-    //                 current->size = size*sizeof(memoryBlock);
-    //                 current->nextBlock = newMemBlock;
-    //                 printf("Memory block split!\n");
-    //                 printf("Current: %ld  nextBlock: %ld\n", current->size/sizeof(memoryBlock), newMemBlock->size/sizeof(memoryBlock));
-    //             }
-    //             current->is_free = false;
-    //             printf("Memory allocated!\n\n");
-    //             allocatedSize += size;// + sizeof(memoryBlock);
-    //           //  printf("Allocated size: %ld\n", allocatedSize);
-    //             return (void*)((char*)current + sizeof(memoryBlock));
-    //         }
-    //         current = current->nextBlock;
-    //     }
-    // }
-    // else
-    // {
-    //     printf("Trying to allocate %ld (total %ld), but only have %ld left.\n", size, allocatedSize+size, (poolSize)/sizeof(memoryBlock) - allocatedSize);
-    //     printf("Not enought space! Allocation failed!\n");
-    //     printf("Failed to allocate memory!\n\n");
-    // }
+    {
+        printf("Trying to allocate %ld (total %ld), but only have %ld left.\n", size, allocatedSize+size, (poolSize)/sizeof(memoryBlock) - allocatedSize);
+        printf("Not enought space! Allocation failed!\n");
+        printf("Failed to allocate memory!\n\n");
+    }
     return NULL;
 }
 
@@ -131,10 +88,10 @@ void mem_free(void* block)
     
     memoryBlock *thisblock = (memoryBlock*)((char*)block - sizeof(memoryBlock));
     thisblock->is_free = true;
-    allocatedSize -= thisblock->size;///sizeof(memoryBlock);
+    allocatedSize -= thisblock->size/sizeof(memoryBlock);
 
     memoryBlock *current = memoryPool;
-    printf("Memory block freed (freed: %ld)  have: %ld left\n\n", thisblock->size, poolSize - allocatedSize);    
+    printf("Memory block freed (freed: %ld)  have: %ld left\n\n", thisblock->size/sizeof(memoryBlock), poolSize/sizeof(memoryBlock) - allocatedSize);    
 
     while(current)
     {

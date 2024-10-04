@@ -14,6 +14,7 @@ size_t nrOfNodes = 0;
 
 void list_init(Node** head, size_t size)
 {
+    mem_init(size);
     *head = front;
     printf("list initialized successfully!\n");
 }
@@ -32,16 +33,17 @@ void list_insert(Node** head, uint16_t data)
             walker = walker->next;
         }
         walker->next = newNode;
-            printf("Node inserted successfully! (%d)\n", newNode->data);
+            //printf("Node inserted successfully! (%d)\n", newNode->data);
                 nrOfNodes++;
     }
     else
     {
         front = newNode;
         *head = front;
-            printf("Node inserted successfully! (%d)\n", newNode->data);
+            //printf("Node inserted successfully! (%d)\n", newNode->data);
                 nrOfNodes++;
     }
+    printf("Node inserted successfully! (%d)\n", newNode->data);
     *head = front;
 }
 
@@ -84,7 +86,7 @@ void list_insert_before(Node** head, Node* next_to, uint16_t data)
         walker->next = newNode;
     }
     nrOfNodes++;
-    printf("Node insterted succesfully before (%d)!", newNode->data);
+    //printf("Node insterted succesfully before (%d)!", newNode->data);
     *head = front;
 }
 
@@ -92,7 +94,7 @@ void list_delete(Node** head, uint16_t data)
 {
     Node* toDel;
 
-    printf("DELETE DATA: %d\n", data);
+    //printf("DELETE DATA: %d\n", data);
 
     if(nrOfNodes == 0)
         printf("No nodes to delete!\n");
@@ -114,7 +116,7 @@ void list_delete(Node** head, uint16_t data)
         {
             if(walker->next->data != data)
                 walker = walker->next;
-            printf("walker: %d\n", walker->data);
+            //printf("walker: %d\n", walker->data);
         }    
 
         if(walker->next)
@@ -169,30 +171,49 @@ void list_display(Node** head)
 
 void list_display_range(Node** head, Node* start_node, Node* end_node)
 {
-    Node* from = start_node;
-    Node* to = end_node;
-
-    printf("From: %d  To: %d\n", from->data, to->data);
-    if(!start_node)
-        from = front;
-    printf("from: %d", from->data);
-    printf("[");
-
-    while(from)
+    if(!start_node && !end_node)
+        list_display(head);
+    else
     {
-        printf("%d", from->data);
-        if(to)
-            if(from != to)
-                printf(", ");
-        else
+        Node* from = start_node;
+        Node* to = end_node;
+
+        if(!start_node)
+            from = front;
+
+        printf("from: %d", from->data);
+        printf("[");
+
+        while(from)
+        {
+            printf("%d",from->data);
+
             if(from->next)
-                printf(", ");
-        from = from->next;
+            {
+                if (from->next != to)
+                    printf(", ");
+                if(to)
+                    if(from == to)
+                        from->next = NULL;
+                from = from->next;
+            }
+        }
+        
+
+        // while(from)
+        // {
+        //     printf("%d", from->data);
+        //     if(to)
+        //         if(from != to)
+        //             printf(", ");
+        //     else
+        //         if(from->next)
+        //             printf(", ");
+        //     from = from->next;
+        // }
+        printf("]\n");
+        *head = front;
     }
-
-    printf("]\n");
-
-
 }
 
 int list_count_nodes(Node** head)

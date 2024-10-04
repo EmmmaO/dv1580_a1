@@ -1,18 +1,20 @@
 #include "memory_manager.h"
 
+// memory Block
 typedef struct memoryBlock
 {
     size_t size;
     bool is_free;
     struct memoryBlock* nextBlock;
-   // struct memoryBlock* prevBlock;
 }memoryBlock;
 
+//Global variables
 memoryBlock* memoryPool = NULL;
 size_t poolSize = 0;
 size_t allocatedSize = 0;
 void* memory_address;
 
+//Initializes the memory pool
 void mem_init(size_t size)
 {
     memory_address = malloc(size*sizeof(memoryBlock));
@@ -24,13 +26,14 @@ void mem_init(size_t size)
     }
     memoryPool = (memoryBlock*)((char*)memory_address);
     memoryPool->size = size*sizeof(memoryBlock);
-    printf("memoryPool->size: %ld, size: %ld, sizeof(memoryBlock): %ld\n", memoryPool->size, size, sizeof(memoryBlock));
+   // printf("memoryPool->size: %ld, size: %ld, sizeof(memoryBlock): %ld\n", memoryPool->size, size, sizeof(memoryBlock));
     memoryPool->is_free = true;
     memoryPool->nextBlock = NULL;
     poolSize = size*sizeof(memoryBlock);
     printf("Memory initialized!\n\n");
 }
 
+//Allocated a block of size in memory pool
 void* mem_alloc(size_t size)
 {
     printf("Trying to allocate: %ld (total: %ld) has: %ld left\n", size, allocatedSize+size, poolSize/sizeof(memoryBlock)-allocatedSize);
@@ -40,7 +43,7 @@ void* mem_alloc(size_t size)
         memoryBlock* current = memoryPool;
         while(current)
         {
-            printf("current block size: %ld\n", current->size/sizeof(memoryBlock));
+            //printf("current block size: %ld\n", current->size/sizeof(memoryBlock));
             if (current->is_free && size*sizeof(memoryBlock) <= current->size || current->size == 0)
             {
                 //Splites the block if there is memory left
@@ -58,7 +61,7 @@ void* mem_alloc(size_t size)
                     current->size = size*sizeof(memoryBlock);
                     current->nextBlock = newMemBlock;
                     printf("Memory block split!\n");
-                    printf("Current: %ld  nextBlock: %ld\n", current->size/sizeof(memoryBlock), newMemBlock->size/sizeof(memoryBlock));
+                    //printf("Current: %ld  nextBlock: %ld\n", current->size/sizeof(memoryBlock), newMemBlock->size/sizeof(memoryBlock));
                 }
                 current->is_free = false;
                 printf("Memory allocated!\n\n");
@@ -78,6 +81,7 @@ void* mem_alloc(size_t size)
     return NULL;
 }
 
+// Frees memory in a specific block
 void mem_free(void* block)
 {
     if (!block)
@@ -108,6 +112,7 @@ void mem_free(void* block)
 
 }
 
+//Resizes a specific block
 void* mem_resize(void* block, size_t size)
 {
     if(!block)
@@ -130,6 +135,7 @@ void* mem_resize(void* block, size_t size)
 
 }
 
+// Frees the memory in memory pool
 void mem_deinit()
 {
     if(memory_address)

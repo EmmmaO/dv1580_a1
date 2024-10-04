@@ -132,10 +132,9 @@ Node* list_search(Node** head, uint16_t data)
 
 void list_display(Node** head)
 {
-    printf("[");
-
     Node* walker = *head;
 
+    printf("[");
     while(walker)
     {
         printf("%d", walker->data);
@@ -143,9 +142,7 @@ void list_display(Node** head)
             printf(", ");
         walker = walker->next;
     }
-
-    printf("]\n");
-
+    printf("]");
 }
 
 void list_display_range(Node** head, Node* start_node, Node* end_node)
@@ -160,24 +157,17 @@ void list_display_range(Node** head, Node* start_node, Node* end_node)
         if(!start_node)
             from = *head;
 
-        printf("from: %d", from->data);
         printf("[");
-
         while(from)
         {
             printf("%d",from->data);
-
-            if(from->next)
-            {
-                if (from->next != to)
-                    printf(", ");
-                if(to)
-                    if(from == to)
-                        from->next = NULL;
-                from = from->next;
-            }
+            if(from == to)
+                break;   
+            from = from->next;
+            if(from)
+                printf(", ");
         }
-        printf("]\n");
+        printf("]");
     }
 }
 

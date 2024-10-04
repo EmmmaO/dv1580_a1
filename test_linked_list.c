@@ -182,7 +182,6 @@ void test_list_display()
     {
         values[k] = 10 + rand() % 90;
         list_insert(&head, values[k]);
-        printf("inserted: %d", values[k]);
         if (k == randomLow && !Low)
         {
             Low = list_search(&head, values[k]);

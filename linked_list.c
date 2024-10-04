@@ -138,9 +138,9 @@ void list_display(Node** head)
     while(walker)
     {
         printf("%d", walker->data);
-        if(walker->next)
-            printf(", ");
         walker = walker->next;
+        if(walker)
+            printf(", ");
     }
     printf("]");
 }

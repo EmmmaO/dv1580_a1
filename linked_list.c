@@ -10,13 +10,12 @@
 Node** list;
 
 Node* front = NULL;
-//size_t cap;
 size_t nrOfNodes = 0;
 
 void list_init(Node** head, size_t size)
 {
+    *head = front;
     printf("list initialized successfully!\n");
-    //list = size;
 }
 
 void list_insert(Node** head, uint16_t data)
@@ -35,8 +34,6 @@ void list_insert(Node** head, uint16_t data)
         walker->next = newNode;
             printf("Node inserted successfully! (%d)\n", newNode->data);
                 nrOfNodes++;
-
-
     }
     else
     {
@@ -44,9 +41,8 @@ void list_insert(Node** head, uint16_t data)
         *head = front;
             printf("Node inserted successfully! (%d)\n", newNode->data);
                 nrOfNodes++;
-
-
     }
+    *head = front;
 }
 
 void list_insert_after(Node* prev_node, uint16_t data)
@@ -63,18 +59,11 @@ void list_insert_after(Node* prev_node, uint16_t data)
         else
             newNode->next = NULL;
         prev_node->next = newNode;
-        printf("Node inserted successfully!");
+        printf("Node inserted successfully after (%d)!", newNode->data);
         nrOfNodes++;
     }
     else
         printf("invalid prev_node");
-
-    // Node* walker = front;
-
-    // while(walker->next && walker != prev_node)
-    //     walker = walker->next;
-    
-    // walker->next = newNode;
 }
 
 void list_insert_before(Node** head, Node* next_to, uint16_t data)
@@ -83,12 +72,20 @@ void list_insert_before(Node** head, Node* next_to, uint16_t data)
     newNode->data = data;
     newNode->next = next_to;
 
-    Node* walker = *head;
-    while(walker->next && walker->next != next_to)
-         walker = walker->next;
-     walker->next = newNode;
-
-     nrOfNodes++;
+    if(front == next_to)
+        front = newNode;
+    else
+    {
+        Node* walker = front;
+        while(walker->next && walker->next != next_to)
+        {
+            walker = walker->next;
+        }
+        walker->next = newNode;
+    }
+    nrOfNodes++;
+    printf("Node insterted succesfully before (%d)!", newNode->data);
+    *head = front;
 }
 
 void list_delete(Node** head, uint16_t data)
@@ -205,9 +202,19 @@ int list_count_nodes(Node** head)
 
 void list_cleanup(Node** head)
 {
-    free(*head);
-    nrOfNodes = 0;
+    Node* walker = front;
 
+    while(walker)
+    {
+        Node* toDel = walker;
+        walker = walker->next;
+
+        //printf("Deleting: %d\n", toDel->data);
+        free(toDel);
+    }
+    nrOfNodes = 0;
+    front = NULL;
+    *head = front;
 }
 
 

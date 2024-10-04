@@ -35,7 +35,7 @@ void list_insert(Node** head, uint16_t data)
             //printf("Node inserted successfully! (%d)\n", newNode->data);
                 nrOfNodes++;
     }
-    printf("Node inserted successfully! (%d)\n", newNode->data);
+    printf("Node inserted successfully!\n");
 }
 
 void list_insert_after(Node* prev_node, uint16_t data)
@@ -52,7 +52,7 @@ void list_insert_after(Node* prev_node, uint16_t data)
         else
             newNode->next = NULL;
         prev_node->next = newNode;
-        printf("Node inserted successfully after (%d)!", newNode->data);
+        printf("Node inserted successfully!");
         nrOfNodes++;
     }
     else
@@ -91,18 +91,19 @@ void list_delete(Node** head, uint16_t data)
     
     else if(toDel->data == data)
     {
-        printf("toDel%d", toDel->data);
         if(toDel->next)
             *head = toDel->next;
-        mem_free(*head);
-        free(*head);
-        *head = NULL;
+        else
+            *head = NULL;
+        mem_free(toDel);
     }
     else
     {
         Node* walker = *head;
 
-        while(walker->next->data != data)
+        while(walker->next)
+            if(walker->next->data == data)
+                break;
             walker = walker->next;
         toDel = walker->next;
 
@@ -111,49 +112,8 @@ void list_delete(Node** head, uint16_t data)
         else
             walker->next = NULL;
 
-        printf("node%d", toDel->data);
         mem_free(toDel);
     }
-
-    //printf("DELETE DATA: %d\n", data);
-
-    // if(nrOfNodes == 0)
-    //     printf("No nodes to delete!\n");
-    // else if((*head)->data == data)
-    // {
-    //     toDel = *head;
-    //     if(nrOfNodes > 1)
-    //         *head = (*head)->next;
-    //     else
-    //         *head = NULL;
-
-    //     mem_free(toDel);
-    //     nrOfNodes--;
-    // }
-    // else
-    // {
-    //     Node* walker = *head;
-    //     while(walker->next)
-    //     {
-    //         if(walker->next->data != data)
-    //             walker = walker->next;
-    //         //printf("walker: %d\n", walker->data);
-    //     }    
-
-    //     if(walker->next)
-    //     {
-    //         if (walker->next->data == data)
-    //         {
-    //             toDel = walker->next;
-    //             if (toDel->next)
-    //             {
-    //                 walker->next = toDel->next;
-    //             }
-    //             mem_free(toDel);
-    //             nrOfNodes--;
-    //         }  
-    //     }
-    // }
 }
 
 Node* list_search(Node** head, uint16_t data)
@@ -217,19 +177,6 @@ void list_display_range(Node** head, Node* start_node, Node* end_node)
                 from = from->next;
             }
         }
-        
-
-        // while(from)
-        // {
-        //     printf("%d", from->data);
-        //     if(to)
-        //         if(from != to)
-        //             printf(", ");
-        //     else
-        //         if(from->next)
-        //             printf(", ");
-        //     from = from->next;
-        // }
         printf("]\n");
     }
 }
@@ -242,7 +189,7 @@ int list_count_nodes(Node** head)
 void list_cleanup(Node** head)
 {
     if(*head == NULL)
-        mem_deinit(*head);
+        return;
     else
     {
         Node* walker = *head;
@@ -250,28 +197,14 @@ void list_cleanup(Node** head)
         while (walker)
         {
             Node* next = walker->next;
-            list_delete(walker, walker->data);
+            
+            mem_free(walker);
             walker = next;
         }
     }
     mem_deinit(*head);
     nrOfNodes = 0;
     *head = NULL;
-    
-    // Node* walker = *head;
-
-    // while(walker)
-    // {
-    //     Node* toDel = walker;
-    //     walker = walker->next;
-
-    //     //printf("Deleting: %d\n", toDel->data);
-    //     mem_free(toDel);
-    // }
-    // nrOfNodes = 0;
-    // mem_free(*head);
-    // *head = NULL;
-
 }
 
 

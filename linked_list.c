@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "common_defs.h"
 
-//Node* front = NULL;
 size_t nrOfNodes = 0;
 
 void list_init(Node** head, size_t size)
@@ -14,7 +13,7 @@ void list_init(Node** head, size_t size)
 
 void list_insert(Node** head, uint16_t data)
 {
-    Node* newNode = mem_alloc(sizeof(Node));//(Node*)malloc(sizeof(Node));
+    Node* newNode = mem_alloc(sizeof(Node));
     newNode->data = data;
     newNode->next = NULL;
 
@@ -26,21 +25,19 @@ void list_insert(Node** head, uint16_t data)
             walker = walker->next;
         }
         walker->next = newNode;
-            //printf("Node inserted successfully! (%d)\n", newNode->data);
-                nrOfNodes++;
+        nrOfNodes++;
     }
     else
     {
         *head = newNode;
-            //printf("Node inserted successfully! (%d)\n", newNode->data);
-                nrOfNodes++;
+        nrOfNodes++;
     }
-    printf("Node inserted successfully!\n");
+    // printf("Node inserted successfully!\n");
 }
 
 void list_insert_after(Node* prev_node, uint16_t data)
 {
-    Node* newNode = mem_alloc(sizeof(Node));//(Node*)malloc(sizeof(Node));
+    Node* newNode = mem_alloc(sizeof(Node));
     newNode->data = data;
 
     if(prev_node)
@@ -52,7 +49,6 @@ void list_insert_after(Node* prev_node, uint16_t data)
         else
             newNode->next = NULL;
         prev_node->next = newNode;
-        printf("Node inserted successfully!");
         nrOfNodes++;
     }
     else
@@ -61,7 +57,7 @@ void list_insert_after(Node* prev_node, uint16_t data)
 
 void list_insert_before(Node** head, Node* next_to, uint16_t data)
 {
-    Node* newNode = mem_alloc(sizeof(Node));//(Node*)malloc(sizeof(Node));
+    Node* newNode = mem_alloc(sizeof(Node));
     newNode->data = data;
     newNode->next = next_to;
 
@@ -80,7 +76,6 @@ void list_insert_before(Node** head, Node* next_to, uint16_t data)
         walker->next = newNode;
     }
     nrOfNodes++;
-    //printf("Node insterted succesfully before (%d)!", newNode->data);
 }
 
 void list_delete(Node** head, uint16_t data)
@@ -130,46 +125,34 @@ Node* list_search(Node** head, uint16_t data)
     return NULL;
 }
 
-void list_display(Node** head)
+void list_display(Node** head) 
 {
-    Node* walker = *head;
+    list_display_range(head, NULL, NULL);
+}
+
+void list_display_range(Node** head, Node* start_node, Node* end_node)
+{
+    Node* from = start_node;
+    Node* to = end_node;
+
+    if(!start_node)
+        from = *head;
+
+    if(!start_node) return;
 
     printf("[");
-    while(walker)
+    while(from)
     {
-        printf("%d", walker->data);
-        walker = walker->next;
-        if(walker)
+        printf("%d",from->data);
+        if(from == to)
+            break;   
+        from = from->next;
+        if(from)
             printf(", ");
     }
     printf("]");
 }
 
-void list_display_range(Node** head, Node* start_node, Node* end_node)
-{
-    if(!start_node && !end_node)
-        list_display(head);
-    else
-    {
-        Node* from = start_node;
-        Node* to = end_node;
-
-        if(!start_node)
-            from = *head;
-
-        printf("[");
-        while(from)
-        {
-            printf("%d",from->data);
-            if(from == to)
-                break;   
-            from = from->next;
-            if(from)
-                printf(", ");
-        }
-        printf("]");
-    }
-}
 
 int list_count_nodes(Node** head)
 {

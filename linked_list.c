@@ -178,9 +178,3 @@ void list_cleanup(Node** head)
     nrOfNodes = 0;
     *head = NULL;
 }
-
-
-// int main()
-// {
-//     return 0;
-// }

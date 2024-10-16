@@ -153,6 +153,7 @@ void* mem_resize(void* block, size_t size)
     }
     return NULL;
 
+    
     // memoryBlock* walker = firstBlock;
     // while (walker)
     // {

@@ -1,4 +1,5 @@
  #include "memory_manager.h"
+ #include <pthread.h>
 
 typedef struct memoryBlock
 {
